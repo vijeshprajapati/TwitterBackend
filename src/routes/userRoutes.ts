@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import createUserValidation from '../helpers/validation';
+import { createUserValidation, updateUserValidation } from '../helpers/validation';
 import { validationResult } from "express-validator";
 
 const router = Router();
@@ -23,7 +23,8 @@ router.post('/', createUserValidation, async (req : any, res : any) => {
                 name,
                 username,
                 bio,
-                image,            }
+                image,
+            }
         });
         res.json(result);
     }
@@ -41,16 +42,23 @@ router.get('/:id', async (req, res) => {
     const id = req.params.id;
 
     const user = await prisma.user.findUnique({where : {id : Number(id)}});
-    res.json(user);
+
+    user ? res.json(user) : res.json({error : 'User not found'});
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', updateUserValidation, async (req : any, res : any) => {
     const id = req.params.id;
 
     const {bio, name , image} = req.body;
  
     try{
+
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({errors : errors.array()});
+        }
+
         const result = await prisma.user.update({
             where: {id : Number(id)},
             data: {bio, name, image}
