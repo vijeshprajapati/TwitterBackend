@@ -2,7 +2,7 @@ import express from "express";
 import userRoutes from './routes/userRoutes';
 import tweetRoutes from './routes/tweetRoutes';
 
-const app =  express();
+const app = express();
 
 app.use(express.json());
 app.use('/user', userRoutes);

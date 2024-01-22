@@ -32,7 +32,7 @@ model Tweet {
 
   content String
   image String?
-  impression Int @default(0)
+  impression Int @default(0) 
 
   userId Int
   user User @relation(fields: [userId], references: [id])
