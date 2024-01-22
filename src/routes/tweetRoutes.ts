@@ -31,14 +31,27 @@ router.post('/', createTweetValidation, async (req : any, res : any) => {
 });
 
 router.get('/', async (req, res) => {
-    const allTweets = await prisma.tweet.findMany();
+    const allTweets = await prisma.tweet.findMany({
+        include: {user: {
+            select : {
+                id : true,
+                name : true,
+                username : true,
+                image : true,
+            }
+        }}
+    });
     res.json(allTweets);
 });
 
 router.get('/:id', async (req, res) => {
     const id = req.params.id;
 
-    const tweet = await prisma.tweet.findUnique({where : {id : Number(id)}});
+    const tweet = await prisma.tweet.findUnique(
+        {
+            where : {id : Number(id)},
+            include : { user : true }
+        });
 
     !tweet ? res.json({error : 'Tweet not found'}) : res.json(tweet);
 });
